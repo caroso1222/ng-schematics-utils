@@ -7,6 +7,10 @@
     "build": "gulp build",
     "watch": "gulp"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caroso1222/ng-schematics-utils"
+  },
   "keywords": [
     "schematics",
     "cli",
