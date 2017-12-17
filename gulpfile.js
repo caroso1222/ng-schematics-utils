@@ -1,10 +1,16 @@
 const gulp = require('gulp'),
-      tsc = require('gulp-typescript').createProject('tsconfig.json');
+      tsc = require('gulp-typescript').createProject('tsconfig.json'),
+      jeditor  = require('gulp-json-editor');
 
 /**
  * Source dir where all the schematics are located
  */
 const srcDir = 'src';      
+
+/**
+ * Folder for compiled files
+ */
+const distDir = 'dist';
     
 /**
  * Files being watched in ./ to be copied to /dist
@@ -26,7 +32,7 @@ const allButTsGlob = [`${srcDir}/**/*`, `!${srcDir}/**/*.ts`];
 gulp.task('tsc', function() {
   gulp.src([`${srcDir}/**/*.ts`])
     .pipe(tsc())
-    .pipe(gulp.dest('dist/'));
+    .pipe(gulp.dest(`${distDir}/`));
 });
 
 /**
@@ -34,7 +40,7 @@ gulp.task('tsc', function() {
  */
 gulp.task('copy:src', function() {
   gulp.src(allButTsGlob)
-    .pipe(gulp.dest('dist/'));
+    .pipe(gulp.dest(`${distDir}/`));
 });
 
 /**
@@ -42,18 +48,30 @@ gulp.task('copy:src', function() {
  */
 gulp.task('copy:root', function() {
   gulp.src(rootFiles)
-    .pipe(gulp.dest('dist/'));
+    .pipe(gulp.dest(`${distDir}/`));
+});
+
+/**
+ * Set 'private' to false when moving the manifest to dist
+ * so that it becomes publishable
+ */
+gulp.task('clean:manifest', function() {
+  gulp.src('package.json')
+    .pipe(jeditor({
+      'private': false
+    }))
+    .pipe(gulp.dest(`${distDir}/`));
 });
 
 /**
  * Watch changes and run 
  */
 gulp.task('watch', function() {
-  gulp.watch('src/**/*.ts', ['tsc']);
+  gulp.watch(`${srcDir}/**/*.ts`, ['tsc']);
   gulp.watch(allButTsGlob, ['copy:src']);
-  gulp.watch(rootFiles, ['copy:root']);
+  gulp.watch(rootFiles, ['copy:root', 'clean:manifest']);
 });
 
-gulp.task('build', ['tsc', 'copy:src', 'copy:root']);
+gulp.task('build', ['tsc', 'copy:src', 'copy:root', 'clean:manifest']);
 
 gulp.task('default', ['build', 'watch']);

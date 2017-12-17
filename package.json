@@ -22,10 +22,11 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-typescript": "^3.2.3",
     "@types/jasmine": "^2.8.2",
-    "@types/node": "^8.5.1"
+    "@types/node": "^8.5.1",
+    "gulp": "^3.9.1",
+    "gulp-json-editor": "^2.2.1",
+    "gulp-typescript": "^3.2.3"
   },
   "dependencies": {
     "@angular-devkit/core": "0.0.22",
