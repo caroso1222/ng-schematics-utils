@@ -1,6 +1,7 @@
 const gulp = require('gulp'),
       tsc = require('gulp-typescript').createProject('tsconfig.json'),
-      jeditor  = require('gulp-json-editor');
+      jeditor  = require('gulp-json-editor'),
+      del = require("del");
 
 /**
  * Source dir where all the schematics are located
@@ -55,7 +56,7 @@ gulp.task('copy:root', function() {
  * Set 'private' to false when moving the manifest to dist
  * so that it becomes publishable
  */
-gulp.task('clean:manifest', function() {
+gulp.task('edit:manifest', function() {
   gulp.src('package.json')
     .pipe(jeditor({
       'private': false
@@ -64,14 +65,21 @@ gulp.task('clean:manifest', function() {
 });
 
 /**
- * Watch changes and run 
+ * Clean dist directory
+ */
+gulp.task('clean', function() {
+  return del.sync([distDir]);
+});
+
+/**
+ * Watch changes and run relevant tasks
  */
 gulp.task('watch', function() {
   gulp.watch(`${srcDir}/**/*.ts`, ['tsc']);
   gulp.watch(allButTsGlob, ['copy:src']);
-  gulp.watch(rootFiles, ['copy:root', 'clean:manifest']);
+  gulp.watch(rootFiles, ['copy:root', 'edit:manifest']);
 });
 
-gulp.task('build', ['tsc', 'copy:src', 'copy:root', 'clean:manifest']);
+gulp.task('build', ['tsc', 'copy:src', 'copy:root', 'edit:manifest']);
 
-gulp.task('default', ['build', 'watch']);
+gulp.task('default', ['clean', 'build', 'watch']);
